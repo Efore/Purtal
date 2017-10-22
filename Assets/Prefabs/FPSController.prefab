@@ -58,10 +58,10 @@ GameObject:
   - component: {fileID: 114673053304120058}
   - component: {fileID: 54971476965882938}
   - component: {fileID: 82874298349941538}
-  - component: {fileID: 114284052057224362}
   - component: {fileID: 33684250530813368}
   - component: {fileID: 23877611588188358}
   - component: {fileID: 136186104524757526}
+  - component: {fileID: 114169577345320674}
   m_Layer: 9
   m_Name: FPSController
   m_TagString: Player
@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 20205687077906102}
   - component: {fileID: 81813404561585426}
   - component: {fileID: 124360884724162392}
+  - component: {fileID: 114105185415249104}
   m_Layer: 9
   m_Name: FirstPersonCharacter
   m_TagString: MainCamera
@@ -110,14 +111,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1484582490671194}
-  m_LocalRotation: {x: 0, y: -0.712516, z: 0, w: 0.7016559}
-  m_LocalPosition: {x: 2.36, y: 2.2, z: -8.09}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 26.37, y: 6.18, z: 3.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4379319210066960}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -90.88, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4379319210066960
 Transform:
   m_ObjectHideFlags: 1
@@ -362,7 +363,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &114284052057224362
+--- !u!114 &114105185415249104
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1956801615841170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 227671856efbb8b41bbdad255a88b618, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_portalA: {fileID: 0}
+  m_portalB: {fileID: 0}
+--- !u!114 &114169577345320674
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -370,10 +384,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1484582490671194}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7934dc1e82ce436439556df8fbe7cc3b, type: 3}
+  m_Script: {fileID: 11500000, guid: 5014bee0011bcdd458d21df0dff286fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerCamera: {fileID: 20205687077906102}
 --- !u!114 &114596115427979812
 MonoBehaviour:
   m_ObjectHideFlags: 1

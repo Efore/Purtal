@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PortalGun : MonoBehaviourExt
+public class PortalGunBehaviour : MonoBehaviourExt
 {
 	#region Private members
 	[SerializeField]

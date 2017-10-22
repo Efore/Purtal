@@ -51,7 +51,7 @@ public class PortalCameraBehaviour : MonoBehaviourExt
 
 	void Start()
 	{
-		ChangePosition ();
+		//ChangePosition ();
 	}
 
 	void LateUpdate () {
@@ -67,9 +67,9 @@ public class PortalCameraBehaviour : MonoBehaviourExt
 		//transform.localPosition = PlayerPOV.Singleton.PlayerCamera.transform.localPosition + new Vector3(0.0f,m_initialLocalY,0.0f);
 		//m_camera.fieldOfView = m_initialFoV + (Vector3.Distance (PlayerPOV.Singleton.transform.position, m_otherPortal.position) * 3);
 		float fovDelta = m_camera.fieldOfView / m_initialFoV;
-		transform.forward = (m_otherPortal.rotation * (PlayerPOV.Singleton.PlayerDirection/fovDelta));
+		transform.forward = (m_thisPortal.rotation * (PlayerPOV.Singleton.PlayerDirection/fovDelta));
 
-		transform.eulerAngles = transform.eulerAngles - (m_difRotation.eulerAngles);
+		//transform.eulerAngles = transform.eulerAngles - (m_difRotation.eulerAngles);
 	}
 
 

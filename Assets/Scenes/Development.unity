@@ -255,7 +255,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 120957684}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 556364617}
@@ -310,22 +310,6 @@ Camera:
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
   m_StereoMirrorMode: 0
---- !u!1 &271233448 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1484582490671194, guid: 10868ab6cb48ceb418eb935563b3cab2,
-    type: 2}
-  m_PrefabInternal: {fileID: 296580853}
---- !u!114 &271233449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 271233448}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5014bee0011bcdd458d21df0dff286fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &296580853
 Prefab:
   m_ObjectHideFlags: 0
@@ -365,22 +349,17 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4195178550899752, guid: 10868ab6cb48ceb418eb935563b3cab2, type: 2}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114673053304120058, guid: 10868ab6cb48ceb418eb935563b3cab2,
+    - target: {fileID: 114105185415249104, guid: 10868ab6cb48ceb418eb935563b3cab2,
         type: 2}
-      propertyPath: m_UseHeadBob
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 23877611588188358, guid: 10868ab6cb48ceb418eb935563b3cab2,
+      propertyPath: m_portalA
+      value: 
+      objectReference: {fileID: 556364618}
+    - target: {fileID: 114105185415249104, guid: 10868ab6cb48ceb418eb935563b3cab2,
         type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 114284052057224362, guid: 10868ab6cb48ceb418eb935563b3cab2, type: 2}
+      propertyPath: m_portalB
+      value: 
+      objectReference: {fileID: 858110363}
+    m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 10868ab6cb48ceb418eb935563b3cab2, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &440701549
@@ -1467,24 +1446,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1708014848}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1761050870 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1956801615841170, guid: 10868ab6cb48ceb418eb935563b3cab2,
-    type: 2}
-  m_PrefabInternal: {fileID: 296580853}
---- !u!114 &1761050873
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1761050870}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4eedf76ae5c9ca4abedf876560d5742, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_portalA: {fileID: 556364618}
-  m_portalB: {fileID: 858110363}
 --- !u!1 &2058931064
 GameObject:
   m_ObjectHideFlags: 0
@@ -1509,7 +1470,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2058931064}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 858110362}
