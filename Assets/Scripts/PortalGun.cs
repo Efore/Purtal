@@ -19,7 +19,10 @@ public class PortalGun : MonoBehaviourExt
 	private Vector3 raycastUpLeftDirection;
 	private Vector3 raycastUpRightDirection;
 
-
+	private bool foundUp = false;
+	private bool foundDown = false;
+	private bool foundLeft = false;
+	private bool foundRight = false;
 
 	private Vector3 raycastOrigin;
 
@@ -141,57 +144,87 @@ public class PortalGun : MonoBehaviourExt
 
 		raycastOrigin = position + direction * 0.1f;
 
-
 		int checkLayer = 1 << LayerMask.NameToLayer ("PortalLimit") | 1 << LayerMask.NameToLayer ("AllowPortal");
+
+		NewPortalPositionAfterRaycasts (portal, ref position,checkLayer);
+
+
+		Collider[] collidersAfterReposition = Physics.OverlapBox (position + direction * 0.1f, new Vector3 (horizontalPortalLimitSize - 0.01f, verticalPortalLimitSize - 0.01f, 0.01f), Quaternion.LookRotation (direction), checkLayer);
+
+		//Checking that the portal's fitting checker is not colliding with itself
+		if(collidersAfterReposition.Length > 1 || (collidersAfterReposition.Length == 1 && collidersAfterReposition[0].transform.parent != portal.transform))				
+			return false;
+
+		return true;
+	}
+
+	private void NewPortalPositionAfterRaycasts(PortalController portal, ref Vector3 position, int checkLayer)
+	{		
+		foundUp = false;
+		foundDown = false;
+		foundLeft = false;
+		foundRight = false;
+
+
 
 		RaycastHit hit;
 		if (Physics.Raycast (raycastOrigin, raycastLeftDirection, out hit, horizontalPortalLimitSize, checkLayer))
 		{
-			if(hit.collider.transform.parent != portal.transform)
+			if (hit.collider.transform.parent != portal.transform)
+			{
 				position -= raycastLeftDirection * (horizontalPortalLimitSize - hit.distance);
+				foundLeft = true;
+			}
 		}
 		if (Physics.Raycast (raycastOrigin, raycastRightDirection, out hit, horizontalPortalLimitSize, checkLayer))
 		{
-			if(hit.collider.transform.parent != portal.transform)
+			if (hit.collider.transform.parent != portal.transform)
+			{
 				position -= raycastRightDirection * (horizontalPortalLimitSize - hit.distance);
+				foundRight = true;
+			}
 		}
 		if (Physics.Raycast (raycastOrigin, raycastUpDirection, out hit, verticalPortalLimitSize, checkLayer))
 		{
-			if(hit.collider.transform.parent != portal.transform)
+			if (hit.collider.transform.parent != portal.transform)
+			{
 				position -= raycastUpDirection * (verticalPortalLimitSize - hit.distance);
+				foundUp = true;
+			}
 		}
 		if (Physics.Raycast (raycastOrigin, raycastDownDirection, out hit, verticalPortalLimitSize, checkLayer))
 		{
-			if(hit.collider.transform.parent != portal.transform)
+			if (hit.collider.transform.parent != portal.transform)
+			{
 				position -= raycastDownDirection * (verticalPortalLimitSize - hit.distance);
+				foundDown = true;
+			}
 		}
-		if (Physics.Raycast (raycastOrigin, raycastDownLeftDirection, out hit, diagonalPortalLimitSize, checkLayer))
+
+		//Diagonal raycast only occur if its respective directions' raycast haven't found anything
+		if (!foundDown && !foundLeft && Physics.Raycast (raycastOrigin, raycastDownLeftDirection, out hit, diagonalPortalLimitSize, checkLayer))
 		{
 			if(hit.collider.transform.parent != portal.transform)
 				position -= raycastDownLeftDirection * (diagonalPortalLimitSize - hit.distance);
 		}
-		if (Physics.Raycast (raycastOrigin, raycastDownRightDirection, out hit, diagonalPortalLimitSize, checkLayer))
+		if (!foundDown && !foundRight && Physics.Raycast (raycastOrigin, raycastDownRightDirection, out hit, diagonalPortalLimitSize, checkLayer))
 		{
 			if(hit.collider.transform.parent != portal.transform)
 				position -= raycastDownRightDirection * (diagonalPortalLimitSize - hit.distance);
 		}
-		if (Physics.Raycast (raycastOrigin, raycastUpLeftDirection, out hit, diagonalPortalLimitSize, checkLayer))
+		if (!foundUp && !foundLeft && Physics.Raycast (raycastOrigin, raycastUpLeftDirection, out hit, diagonalPortalLimitSize, checkLayer))
 		{
 			if(hit.collider.transform.parent != portal.transform)
 				position -= raycastUpLeftDirection * (diagonalPortalLimitSize - hit.distance);
 		}
-		if (Physics.Raycast (raycastOrigin, raycastUpRightDirection, out hit, diagonalPortalLimitSize, checkLayer))
+		if (!foundUp && !foundRight && Physics.Raycast (raycastOrigin, raycastUpRightDirection, out hit, diagonalPortalLimitSize, checkLayer))
 		{
 			if(hit.collider.transform.parent != portal.transform)
 				position -= raycastUpRightDirection * (diagonalPortalLimitSize - hit.distance);
 		}
-
-		//fix this
-//		if (Physics.OverlapBox (position + direction * 0.1f, new Vector3 (horizontalPortalLimitSize - 0.01f, verticalPortalLimitSize - 0.01f, 0.01f), Quaternion.LookRotation (direction)).Length > 0)
-//			return false;
-
-		return true;
 	}
+
+
 
 	#endregion
 
