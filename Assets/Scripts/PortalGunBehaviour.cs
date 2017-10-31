@@ -4,8 +4,10 @@ using System.Collections;
 public class PortalGunBehaviour : MonoBehaviourExt
 {
 	#region Private members
+
 	[SerializeField]
 	private PortalController m_portalA = null;
+
 	[SerializeField]
 	private PortalController m_portalB = null;
 
@@ -110,9 +112,6 @@ public class PortalGunBehaviour : MonoBehaviourExt
 		{
 			portal.transform.position = futurePos + direction * 0.01f;
 			portal.transform.forward = direction;
-			portal.OtherPortalCamera.ChangePosition ();
-
-			//if direction == up or down, rotate portal towards player
 		}
 	}
 
@@ -223,9 +222,6 @@ public class PortalGunBehaviour : MonoBehaviourExt
 				position -= raycastUpRightDirection * (diagonalPortalLimitSize - hit.distance);
 		}
 	}
-
-
-
 	#endregion
 
 	#region Public methods

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 
-public class PortalController : MonoBehaviour {
+public class PortalController : MonoBehaviourExt {
 
 	[SerializeField]
-	private PortalCameraBehaviour m_otherPortalCamera = null;
+	private Transform m_otherPortalTransform = null;
+	[SerializeField]
+	private Transform m_levelForThisPortal = null;
 	[SerializeField]
 	private BoxCollider m_portalLimit = null;
 
@@ -17,17 +19,14 @@ public class PortalController : MonoBehaviour {
 		get { return m_portalLimit; }
 	}
 
-	public PortalCameraBehaviour OtherPortalCamera
+	public Transform LevelForThisPortal
 	{
 		get {
-			return m_otherPortalCamera; 
+			return m_levelForThisPortal; 
 		}
 	}
 
 	#region Monobehaviour calls
-
-	void Start () {
-	}
 
 	void Update()
 	{
@@ -52,20 +51,35 @@ public class PortalController : MonoBehaviour {
 
 	#endregion
 
-	#region Private members
+	#region Private methods
 
 	private void TeleportBehaviour()
 	{
 		if (playerOverlapping) {
 
 			// transport him to the equivalent position in the other portal
-			var newPosition = m_otherPortalCamera.ThisPortal.position;
+			var newPosition = m_otherPortalTransform.position;
 			PlayerPOV.Singleton.transform.position = newPosition;
-			PlayerPOV.Singleton.SetPlayerDirection (m_otherPortalCamera.transform.forward);
+			PlayerPOV.Singleton.SetPlayerDirection (m_otherPortalTransform.forward);
 			playerOverlapping = false;
 
 		}
 	}
 
 	#endregion
+
+	#region Public methods
+
+	public void AdjustLevelForThisPortal()
+	{
+		Vector3 inverseDirection = m_transformCached.InverseTransformDirection (PlayerPOV.Singleton.RealLevelTransform.forward);
+		Vector3 inversePosition = m_transformCached.InverseTransformPoint (PlayerPOV.Singleton.RealLevelTransform.position);
+
+
+
+	}
+
+	#endregion
+
+
 }

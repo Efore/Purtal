@@ -16,6 +16,8 @@ public class PlayerPOV : MonoBehaviour
 	#endregion
 
 	#region Private members
+	[SerializeField]
+	private Transform m_realLevelTransform = null;
 
 	private FirstPersonController m_fpsController = null;
 
@@ -26,6 +28,7 @@ public class PlayerPOV : MonoBehaviour
 	#endregion
 
 	#region Properties
+
 	public Camera PlayerCamera
 	{
 		get { return m_fpsController.Camera; }
@@ -39,6 +42,11 @@ public class PlayerPOV : MonoBehaviour
 	public Quaternion PlayerRotation
 	{
 		get { return m_fpsController.ControllerRotation (); }
+	}
+
+	public Transform RealLevelTransform
+	{
+		get { return m_realLevelTransform; }
 	}
 
 	#endregion
