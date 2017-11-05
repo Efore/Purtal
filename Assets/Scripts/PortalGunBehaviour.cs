@@ -59,9 +59,9 @@ public class PortalGunBehaviour : MonoBehaviourExt
 	void Update()
 	{
 		if (Input.GetMouseButtonDown (0))
-			ShootPortal (m_portalA);
+			ShootPortal (m_portalA, m_portalB);
 		else if (Input.GetMouseButtonDown (1))
-			ShootPortal (m_portalB); 
+			ShootPortal (m_portalB, m_portalA); 
 	}
 
 	void OnDrawGizmos()
@@ -89,7 +89,7 @@ public class PortalGunBehaviour : MonoBehaviourExt
 
 	#region Private methods
 
-	private void ShootPortal(PortalController portal)
+	private void ShootPortal(PortalController portal, PortalController otherPortal)
 	{
 		RaycastHit hit;
 
@@ -102,16 +102,18 @@ public class PortalGunBehaviour : MonoBehaviourExt
 		if (!Physics.Raycast (m_transformCached.position, m_transformCached.forward, out hit, 1000.0f, 1 << LayerMask.NameToLayer ("AllowPortal")))
 			return;
 
-		PlacePortal (portal, hit.point, hit.normal);
+		PlacePortal (portal, otherPortal, hit.point, hit.normal);
 	}
 
-	private void PlacePortal(PortalController portal, Vector3 position, Vector3 direction)
+	private void PlacePortal(PortalController portalToPlace, PortalController otherPortal, Vector3 position, Vector3 direction)
 	{
 		Vector3 futurePos = position;
-		if (PortalFits (portal, ref futurePos, direction))
+		if (PortalFits (portalToPlace, ref futurePos, direction))
 		{
-			portal.transform.position = futurePos + direction * 0.01f;
-			portal.transform.forward = direction;
+			portalToPlace.transform.position = futurePos + direction * 0.01f;
+			portalToPlace.transform.forward = direction;
+			portalToPlace.AdjustLevelForThisPortal ();
+			otherPortal.AdjustLevelForThisPortal ();
 		}
 	}
 
@@ -222,6 +224,7 @@ public class PortalGunBehaviour : MonoBehaviourExt
 				position -= raycastUpRightDirection * (diagonalPortalLimitSize - hit.distance);
 		}
 	}
+
 	#endregion
 
 	#region Public methods

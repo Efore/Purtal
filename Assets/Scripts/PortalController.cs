@@ -11,6 +11,8 @@ public class PortalController : MonoBehaviourExt {
 	private Transform m_levelForThisPortal = null;
 	[SerializeField]
 	private BoxCollider m_portalLimit = null;
+	[SerializeField]
+	private Transform m_inversePortalTransform = null;
 
 	private bool playerOverlapping = false;
 
@@ -28,7 +30,7 @@ public class PortalController : MonoBehaviourExt {
 
 	#region Monobehaviour calls
 
-	void Update()
+	void LateUpdate()
 	{
 		TeleportBehaviour ();
 	}
@@ -59,10 +61,19 @@ public class PortalController : MonoBehaviourExt {
 
 			// transport him to the equivalent position in the other portal
 			var newPosition = m_otherPortalTransform.position;
+			Vector3 impulse = m_otherPortalTransform.TransformVector(PlayerPOV.Singleton.transform.InverseTransformVector(PlayerPOV.Singleton.CharacterController.velocity));
 			PlayerPOV.Singleton.transform.position = newPosition;
-			PlayerPOV.Singleton.SetPlayerDirection (m_otherPortalTransform.forward);
-			playerOverlapping = false;
 
+			Quaternion newPlayerRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * PlayerPOV.Singleton.GetPlayerRotation();
+			newPlayerRotation = m_otherPortalTransform.rotation * newPlayerRotation;
+
+//			Vector3 newPlayerDirection = m_inversePortalTransform.InverseTransformVector (PlayerPOV.Singleton.GetPlayerDirection());
+//			newPlayerDirection = m_otherPortalTransform.TransformVector (newPlayerDirection);
+
+			PlayerPOV.Singleton.SetPlayerDirection (newPlayerRotation * Vector3.forward);
+			PlayerPOV.Singleton.CharacterController.SimpleMove (impulse * Time.deltaTime);
+
+			playerOverlapping = false;
 		}
 	}
 
@@ -71,12 +82,12 @@ public class PortalController : MonoBehaviourExt {
 	#region Public methods
 
 	public void AdjustLevelForThisPortal()
-	{
-		Vector3 inverseDirection = m_transformCached.InverseTransformDirection (PlayerPOV.Singleton.RealLevelTransform.forward);
-		Vector3 inversePosition = m_transformCached.InverseTransformPoint (PlayerPOV.Singleton.RealLevelTransform.position);
+	{		
+		Quaternion inverseRotation = Quaternion.Inverse (m_otherPortalTransform.rotation) * PlayerPOV.Singleton.RealLevelTransform.rotation;
+		Vector3 inversePosition = m_otherPortalTransform.InverseTransformPoint (PlayerPOV.Singleton.RealLevelTransform.position);
 
-
-
+		m_levelForThisPortal.position = m_inversePortalTransform.TransformPoint (inversePosition);
+		m_levelForThisPortal.rotation = m_inversePortalTransform.rotation * inverseRotation;
 	}
 
 	#endregion

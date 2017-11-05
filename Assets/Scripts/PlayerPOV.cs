@@ -20,6 +20,7 @@ public class PlayerPOV : MonoBehaviour
 	private Transform m_realLevelTransform = null;
 
 	private FirstPersonController m_fpsController = null;
+	private CharacterController m_characterController = null;
 
 	#endregion
 
@@ -34,20 +35,17 @@ public class PlayerPOV : MonoBehaviour
 		get { return m_fpsController.Camera; }
 	}
 
-	public Vector3 PlayerDirection
-	{
-		get{ return m_fpsController.ControllerDirection(); }
-	}
-
-	public Quaternion PlayerRotation
-	{
-		get { return m_fpsController.ControllerRotation (); }
-	}
-
 	public Transform RealLevelTransform
 	{
 		get { return m_realLevelTransform; }
 	}
+
+	public CharacterController CharacterController
+	{
+		get { return m_characterController; }
+	}
+
+
 
 	#endregion
 
@@ -61,6 +59,7 @@ public class PlayerPOV : MonoBehaviour
 	{
 		m_instance = this;
 		m_fpsController = GetComponent<FirstPersonController> ();
+		m_characterController = GetComponent<CharacterController> ();
 	}
 
 	#endregion
@@ -70,6 +69,16 @@ public class PlayerPOV : MonoBehaviour
 	#endregion
 
 	#region Public methods
+
+	public Quaternion GetPlayerRotation()
+	{
+		return m_fpsController.ControllerRotation ();
+	}
+
+	public Vector3 GetPlayerDirection()
+	{
+		return m_fpsController.ControllerDirection();
+	}
 
 	public void SetPlayerDirection(Vector3 direction)
 	{
