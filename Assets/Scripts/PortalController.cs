@@ -64,13 +64,9 @@ public class PortalController : MonoBehaviourExt {
 			Vector3 impulse = m_otherPortalTransform.TransformVector(PlayerPOV.Singleton.transform.InverseTransformVector(PlayerPOV.Singleton.CharacterController.velocity));
 			PlayerPOV.Singleton.transform.position = newPosition;
 
-			Quaternion newPlayerRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * PlayerPOV.Singleton.GetPlayerRotation();
-			newPlayerRotation = m_otherPortalTransform.rotation * newPlayerRotation;
+			Quaternion newPlayerRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * PlayerPOV.Singleton.GetPlayerRotation ();
 
-//			Vector3 newPlayerDirection = m_inversePortalTransform.InverseTransformVector (PlayerPOV.Singleton.GetPlayerDirection());
-//			newPlayerDirection = m_otherPortalTransform.TransformVector (newPlayerDirection);
-
-			PlayerPOV.Singleton.SetPlayerDirection (newPlayerRotation * Vector3.forward);
+			PlayerPOV.Singleton.SetPlayerDirection(newPlayerRotation * m_otherPortalTransform.forward);
 			PlayerPOV.Singleton.CharacterController.SimpleMove (impulse * Time.deltaTime);
 
 			playerOverlapping = false;
