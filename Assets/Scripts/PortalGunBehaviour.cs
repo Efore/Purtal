@@ -6,10 +6,10 @@ public class PortalGunBehaviour : MonoBehaviourExt
 	#region Private members
 
 	[SerializeField]
-	private PortalController m_portalA = null;
+	private PortalBehaviour m_portalA = null;
 
 	[SerializeField]
-	private PortalController m_portalB = null;
+	private PortalBehaviour m_portalB = null;
 
 	private Vector3 raycastDownDirection;
 	private Vector3 raycastUpDirection;
@@ -64,6 +64,8 @@ public class PortalGunBehaviour : MonoBehaviourExt
 			ShootPortal (m_portalB, m_portalA); 
 	}
 
+	#if UNITY_EDITOR
+
 	void OnDrawGizmos()
 	{
 		Gizmos.color = Color.green;
@@ -84,12 +86,13 @@ public class PortalGunBehaviour : MonoBehaviourExt
 		Gizmos.DrawLine (raycastOrigin, raycastOrigin + raycastDownRightDirection * diagonalPortalLimitSize);
 	}
 
+	#endif
 
 	#endregion
 
 	#region Private methods
 
-	private void ShootPortal(PortalController portal, PortalController otherPortal)
+	private void ShootPortal(PortalBehaviour portal, PortalBehaviour otherPortal)
 	{
 		RaycastHit hit;
 
@@ -105,19 +108,18 @@ public class PortalGunBehaviour : MonoBehaviourExt
 		PlacePortal (portal, otherPortal, hit.point, hit.normal);
 	}
 
-	private void PlacePortal(PortalController portalToPlace, PortalController otherPortal, Vector3 position, Vector3 direction)
+	private void PlacePortal(PortalBehaviour portalToPlace, PortalBehaviour otherPortal, Vector3 position, Vector3 direction)
 	{
 		Vector3 futurePos = position;
 		if (PortalFits (portalToPlace, ref futurePos, direction))
 		{
-			portalToPlace.transform.position = futurePos + direction * 0.01f;
-			portalToPlace.transform.forward = direction;
+			portalToPlace.ChangePosition (futurePos + direction * 0.001f, direction);
 			portalToPlace.AdjustLevelForThisPortal ();
 			otherPortal.AdjustLevelForThisPortal ();
 		}
 	}
 
-	private bool PortalFits(PortalController portal, ref Vector3 position, Vector3 direction)
+	private bool PortalFits(PortalBehaviour portal, ref Vector3 position, Vector3 direction)
 	{	
 		if (direction == Vector3.up)
 		{
@@ -159,14 +161,12 @@ public class PortalGunBehaviour : MonoBehaviourExt
 		return true;
 	}
 
-	private void NewPortalPositionAfterRaycasts(PortalController portal, ref Vector3 position, int checkLayer)
+	private void NewPortalPositionAfterRaycasts(PortalBehaviour portal, ref Vector3 position, int checkLayer)
 	{		
 		foundUp = false;
 		foundDown = false;
 		foundLeft = false;
 		foundRight = false;
-
-
 
 		RaycastHit hit;
 		if (Physics.Raycast (raycastOrigin, raycastLeftDirection, out hit, horizontalPortalLimitSize, checkLayer))

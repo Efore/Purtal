@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 
-public class PortalController : MonoBehaviourExt {
+public class PortalBehaviour : MonoBehaviourExt {
 
 	[SerializeField]
 	private Transform m_otherPortalTransform = null;
@@ -13,6 +13,8 @@ public class PortalController : MonoBehaviourExt {
 	private BoxCollider m_portalLimit = null;
 	[SerializeField]
 	private Transform m_inversePortalTransform = null;
+	[SerializeField]
+	private Animator m_animator = null;
 
 	private bool playerOverlapping = false;
 
@@ -74,7 +76,6 @@ public class PortalController : MonoBehaviourExt {
 			PlayerPOV.Singleton.CharacterController.SimpleMove (impulse * Time.deltaTime);
 
 			playerOverlapping = false;
-
 		}
 	}
 
@@ -82,8 +83,15 @@ public class PortalController : MonoBehaviourExt {
 
 	#region Public methods
 
+	public void ChangePosition(Vector3 position, Vector3 direction)
+	{
+		m_transformCached.position = position;
+		m_transformCached.forward = direction;
+		m_animator.Rebind ();
+	}
+
 	public void AdjustLevelForThisPortal()
-	{		
+	{	
 		Quaternion inverseRotation = Quaternion.Inverse (m_otherPortalTransform.rotation) * PlayerPOV.Singleton.RealLevelTransform.rotation;
 		Vector3 inversePosition = m_otherPortalTransform.InverseTransformPoint (PlayerPOV.Singleton.RealLevelTransform.position);
 
