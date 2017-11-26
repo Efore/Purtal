@@ -113,7 +113,7 @@ public class PortalGunBehaviour : MonoBehaviourExt
 		Vector3 futurePos = position;
 		if (PortalFits (portalToPlace, ref futurePos, direction))
 		{
-			portalToPlace.ChangePosition (futurePos + direction * 0.001f, direction);
+			portalToPlace.ChangePosition (futurePos , direction);
 			portalToPlace.AdjustLevelForThisPortal ();
 			otherPortal.AdjustLevelForThisPortal ();
 		}
@@ -147,7 +147,7 @@ public class PortalGunBehaviour : MonoBehaviourExt
 
 		raycastOrigin = position + direction * 0.1f;
 
-		int checkLayer = 1 << LayerMask.NameToLayer ("PortalLimit") | 1 << LayerMask.NameToLayer ("AllowPortal");
+		int checkLayer = 1 << LayerMask.NameToLayer ("PortalLimit") | 1 << LayerMask.NameToLayer ("AllowPortal") | 1 << LayerMask.NameToLayer ("Wall");
 
 		NewPortalPositionAfterRaycasts (portal, ref position,checkLayer);
 

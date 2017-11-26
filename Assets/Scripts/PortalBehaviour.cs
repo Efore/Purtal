@@ -16,8 +16,6 @@ public class PortalBehaviour : MonoBehaviourExt {
 	[SerializeField]
 	private Animator m_animator = null;
 
-	private bool playerOverlapping = false;
-
 	public BoxCollider BoxCollider
 	{
 		get { return m_portalLimit; }
@@ -32,24 +30,21 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	#region Monobehaviour calls
 
-	void LateUpdate()
-	{
-		TeleportBehaviour ();
-	}
-
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.tag == "Player")
+		if (!PortalsManager.Singleton.ElementsToTeleport.ContainsKey(other.transform.GetComponent<Rigidbody>()))
 		{
-			playerOverlapping = true;
+			PortalsManager.Singleton.ElementsToTeleport.Add (other.transform.GetComponent<Rigidbody>(), this);
+			if(other.tag == "Player")
+				TeleportPlayer ();
 		}
 	}
 
 	void OnTriggerExit(Collider other)
 	{
-		if (other.tag == "Player")
+		if (PortalsManager.Singleton.ElementsToTeleport.ContainsKey(other.transform.GetComponent<Rigidbody>()) && PortalsManager.Singleton.ElementsToTeleport [other.transform.GetComponent<Rigidbody>()] != this)
 		{
-			playerOverlapping = false;
+			PortalsManager.Singleton.ElementsToTeleport.Remove (other.transform.GetComponent<Rigidbody>());
 		}
 	}
 
@@ -57,26 +52,18 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	#region Private methods
 
-	private void TeleportBehaviour()
-	{
-		if (playerOverlapping) {
+	private void TeleportPlayer()
+	{		
+		// transport him to the equivalent position in the other portal
+		var newPosition = m_otherPortalTransform.position;
+		Vector3 impulse = m_otherPortalTransform.TransformVector(PlayerPOV.Singleton.transform.InverseTransformVector(PlayerPOV.Singleton.CharacterController.velocity));
+		PlayerPOV.Singleton.transform.position = newPosition;
 
-			// transport him to the equivalent position in the other portal
-			var newPosition = m_otherPortalTransform.position;
-			Vector3 impulse = m_otherPortalTransform.TransformVector(PlayerPOV.Singleton.transform.InverseTransformVector(PlayerPOV.Singleton.CharacterController.velocity));
-			PlayerPOV.Singleton.transform.position = newPosition;
+		Quaternion newPlayerRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * PlayerPOV.Singleton.GetPlayerRotation();
+		newPlayerRotation = m_otherPortalTransform.rotation * newPlayerRotation;
 
-			Quaternion newPlayerRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * PlayerPOV.Singleton.GetPlayerRotation();
-			newPlayerRotation = m_otherPortalTransform.rotation * newPlayerRotation;
-
-			//			Vector3 newPlayerDirection = m_inversePortalTransform.InverseTransformVector (PlayerPOV.Singleton.GetPlayerDirection());
-			//			newPlayerDirection = m_otherPortalTransform.TransformVector (newPlayerDirection);
-
-			PlayerPOV.Singleton.SetPlayerDirection (newPlayerRotation * Vector3.forward);
-			PlayerPOV.Singleton.CharacterController.SimpleMove (impulse * Time.deltaTime);
-
-			playerOverlapping = false;
-		}
+		PlayerPOV.Singleton.SetPlayerDirection (newPlayerRotation * Vector3.forward);
+		//PlayerPOV.Singleton.CharacterController.SimpleMove (impulse * Time.deltaTime);
 	}
 
 	#endregion
