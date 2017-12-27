@@ -38,14 +38,17 @@ public class PortalBehaviour : MonoBehaviourExt {
 			if(other.tag == "Player")
 				TeleportPlayer ();
 		}
+		Debug.Log ("enter " + this.name);
 	}
 
 	void OnTriggerExit(Collider other)
 	{
-		if (PortalsManager.Singleton.ElementsToTeleport.ContainsKey(other.transform.GetComponent<Rigidbody>()) && PortalsManager.Singleton.ElementsToTeleport [other.transform.GetComponent<Rigidbody>()] != this)
+		if (PortalsManager.Singleton.ElementsToTeleport.ContainsKey(other.transform.GetComponent<Rigidbody>()))
 		{
 			PortalsManager.Singleton.ElementsToTeleport.Remove (other.transform.GetComponent<Rigidbody>());
 		}
+		Debug.Log ("exit " + this.name);
+		Debug.Log (PortalsManager.Singleton.ElementsToTeleport.Count);
 	}
 
 	#endregion
@@ -63,7 +66,7 @@ public class PortalBehaviour : MonoBehaviourExt {
 		newPlayerRotation = m_otherPortalTransform.rotation * newPlayerRotation;
 
 		PlayerPOV.Singleton.SetPlayerDirection (newPlayerRotation * Vector3.forward);
-		//PlayerPOV.Singleton.CharacterController.SimpleMove (impulse * Time.deltaTime);
+		PlayerPOV.Singleton.CharacterController.SimpleMove (impulse * Time.deltaTime);
 	}
 
 	#endregion
