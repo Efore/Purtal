@@ -1,12 +1,9 @@
 # Local ignores
 exe/
-Assets/Graphics/FireFireWeapon/
 Assets/ShaderForge/
 Library/
 Temp/
 obj/
-Assets/Graphics/Textures/
-Assets/Standard Assets/
 WebGL/
 *.csproj
 *.pidb
