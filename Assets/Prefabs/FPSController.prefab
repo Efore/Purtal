@@ -28,6 +28,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1331618642316996
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4099150791621012}
+  m_Layer: 9
+  m_Name: PickedObjects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1338903278719694
 GameObject:
   m_ObjectHideFlags: 1
@@ -113,6 +128,7 @@ GameObject:
   - component: {fileID: 81813404561585426}
   - component: {fileID: 124360884724162392}
   - component: {fileID: 114105185415249104}
+  - component: {fileID: 114374392707281392}
   m_Layer: 9
   m_Name: FirstPersonCharacter
   m_TagString: MainCamera
@@ -120,6 +136,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &4099150791621012
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1331618642316996}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.254, z: 0.437}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4195178550899752}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4195178550899752
 Transform:
   m_ObjectHideFlags: 1
@@ -132,6 +161,7 @@ Transform:
   m_Children:
   - {fileID: 4379319210066960}
   - {fileID: 4364091263195804}
+  - {fileID: 4099150791621012}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -143,7 +173,7 @@ Transform:
   m_GameObject: {fileID: 1647226512133536}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.33, y: 1, z: 0.39}
+  m_LocalScale: {x: 0.33, y: 1, z: 0.33}
   m_Children: []
   m_Father: {fileID: 4195178550899752}
   m_RootOrder: 1
@@ -225,7 +255,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 535af294171bf8544b73470416f6e6be, type: 2}
+  - {fileID: 2100000, guid: 0a776d9a1cbebb74cb153b18568c9c7e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -257,7 +287,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 13397d414f7261d4fa26f007649db9b6, type: 2}
+  - {fileID: 2100000, guid: b205ef93627416b43b0095e56b9cc356, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -417,6 +447,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_realLevelTransform: {fileID: 0}
+--- !u!114 &114374392707281392
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1956801615841170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb1e4723d7251a4d9849d31957bb627, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_pickedObjectTransform: {fileID: 4099150791621012}
+  m_maxDistanceForPicking: 5
+  m_lerpValue: 0.5
 --- !u!114 &114596115427979812
 MonoBehaviour:
   m_ObjectHideFlags: 1
