@@ -13,7 +13,7 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 	[SerializeField]
 	private float m_lerpValue = 0.5f;
 
-	private GameObject m_objectPicked = null;
+	private Rigidbody m_rigidBodyPicked = null;
 	#endregion
 
 	#region Public members
@@ -32,20 +32,22 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 	void Update()
 	{
 		if (Input.GetKeyDown (KeyCode.E)) {
-			if (m_objectPicked != null) {
-				m_objectPicked.GetComponent<Rigidbody> ().useGravity = true;
-				m_objectPicked.GetComponent<Rigidbody> ().isKinematic = false;
-				m_objectPicked = null;
+			if (m_rigidBodyPicked != null) {
+				m_rigidBodyPicked.useGravity = true;
+				m_rigidBodyPicked.isKinematic = false;
+				if(Vector3.Dot(PlayerPOV.Singleton.CharacterController.velocity,m_transformCached.forward) > 0.5f)
+					m_rigidBodyPicked.AddForce (PlayerPOV.Singleton.CharacterController.velocity,ForceMode.Impulse);
+				m_rigidBodyPicked = null;
 			} else
 				TryGetObject ();
 		}
 	}
 
-	void LateUpdate()
+	void FixedUpdate()
 	{		
-		if (m_objectPicked != null) {
-			m_objectPicked.transform.rotation = Quaternion.Lerp (m_objectPicked.transform.rotation, m_pickedObjectTransform.rotation,m_lerpValue);
-			m_objectPicked.transform.position = Vector3.Lerp (m_objectPicked.transform.position, m_pickedObjectTransform.position,m_lerpValue);
+		if (m_rigidBodyPicked != null) {
+			m_rigidBodyPicked.MoveRotation(Quaternion.Lerp (m_rigidBodyPicked.transform.rotation, m_pickedObjectTransform.rotation,m_lerpValue));
+			m_rigidBodyPicked.MovePosition(Vector3.Lerp (m_rigidBodyPicked.transform.position, m_pickedObjectTransform.position,m_lerpValue));
 		}
 	}
 
@@ -56,10 +58,9 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 	private void TryGetObject()
 	{
 		RaycastHit hit;
-		if (Physics.Raycast (m_transformCached.position, m_transformCached.forward, out hit, m_maxDistanceForPicking,1 << LayerMask.NameToLayer ("Object"))) {			
-			//hit.collider.attachedRigidbody.isKinematic = true;
-			hit.collider.attachedRigidbody.useGravity = false;
-			m_objectPicked = hit.collider.gameObject;
+		if (Physics.Raycast (m_transformCached.position, m_transformCached.forward, out hit, m_maxDistanceForPicking,1 << LayerMask.NameToLayer ("Object"))) {	
+			m_rigidBodyPicked = hit.collider.attachedRigidbody;
+			m_rigidBodyPicked.useGravity = false;
 		}
 	}
 

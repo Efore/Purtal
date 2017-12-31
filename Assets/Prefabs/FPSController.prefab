@@ -143,7 +143,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1331618642316996}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.254, z: 0.437}
+  m_LocalPosition: {x: 0, y: -0.048, z: 1.114}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4195178550899752}
@@ -459,7 +459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_pickedObjectTransform: {fileID: 4099150791621012}
-  m_maxDistanceForPicking: 5
+  m_maxDistanceForPicking: 2
   m_lerpValue: 0.5
 --- !u!114 &114596115427979812
 MonoBehaviour:
