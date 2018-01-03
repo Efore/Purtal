@@ -32,24 +32,22 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	void OnTriggerEnter(Collider other)
 	{
-		if (!PortalsManager.Singleton.ElementsToTeleport.ContainsKey(other.transform.GetComponent<Rigidbody>()))
-		{
-			PortalsManager.Singleton.ElementsToTeleport.Add (other.transform.GetComponent<Rigidbody>(), this);
-			if(other.tag == "Player")
+		if (!PortalsManager.Singleton.ElementsToTeleport.ContainsKey (other.transform.GetComponent<Rigidbody> ())) {
+			PortalsManager.Singleton.ElementsToTeleport.Add (other.transform.GetComponent<Rigidbody> (), this);	
+			if (other.tag == "Player")
 				TeleportPlayer ();
-		}
-		Debug.Log ("enter " + this.name);
+			else
+				TeleportObject (other.transform.GetComponent<Rigidbody> ());	
+		} 
 	}
 
 	void OnTriggerExit(Collider other)
 	{
 		if (PortalsManager.Singleton.ElementsToTeleport.ContainsKey(other.transform.GetComponent<Rigidbody>()))
-		{
-			PortalsManager.Singleton.ElementsToTeleport.Remove (other.transform.GetComponent<Rigidbody>());
-		}
-		Debug.Log ("exit " + this.name);
-		Debug.Log (PortalsManager.Singleton.ElementsToTeleport.Count);
+			PortalsManager.Singleton.ElementsToTeleport.Remove (other.transform.GetComponent<Rigidbody>());		
 	}
+
+
 
 	#endregion
 
@@ -58,7 +56,12 @@ public class PortalBehaviour : MonoBehaviourExt {
 	private void TeleportPlayer()
 	{		
 		// transport him to the equivalent position in the other portal
-		var newPosition = m_otherPortalTransform.position;
+		Vector3 newPosition = m_otherPortalTransform.position;
+
+		float yLocal = m_transformCached.InverseTransformPoint (PlayerPOV.Singleton.transform.position).y;
+		yLocal = m_otherPortalTransform.TransformPoint(new Vector3(0.0f,yLocal, 0.0f)).y - m_otherPortalTransform.position.y;
+		newPosition += new Vector3 (0.0f, yLocal, 0.0f);
+
 		Vector3 impulse = m_otherPortalTransform.TransformVector(PlayerPOV.Singleton.transform.InverseTransformVector(PlayerPOV.Singleton.CharacterController.velocity));
 		PlayerPOV.Singleton.transform.position = newPosition;
 
@@ -66,7 +69,31 @@ public class PortalBehaviour : MonoBehaviourExt {
 		newPlayerRotation = m_otherPortalTransform.rotation * newPlayerRotation;
 
 		PlayerPOV.Singleton.SetPlayerDirection (newPlayerRotation * Vector3.forward);
-		PlayerPOV.Singleton.CharacterController.SimpleMove (impulse * Time.deltaTime);
+		PlayerPOV.Singleton.CharacterController.SimpleMove (impulse);
+	}
+
+	private void TeleportObject(Rigidbody objectRigidBody)
+	{		
+		Debug.Log (objectRigidBody.velocity);
+		Vector3 impulse = m_otherPortalTransform.TransformVector(m_inversePortalTransform.
+			InverseTransformVector(objectRigidBody.velocity));
+		Debug.Log (impulse);
+
+		objectRigidBody.isKinematic = true;
+		Vector3 newPosition = m_otherPortalTransform.position;
+
+		float yLocal = m_transformCached.InverseTransformPoint (objectRigidBody.transform.position).y;
+		yLocal = m_otherPortalTransform.TransformPoint(new Vector3(0.0f,yLocal, 0.0f)).y - m_otherPortalTransform.position.y;
+		newPosition += new Vector3 (0.0f, yLocal, 0.0f);
+
+		Quaternion newRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * objectRigidBody.rotation;
+		newRotation = m_otherPortalTransform.rotation * newRotation;
+
+		objectRigidBody.transform.position = newPosition + m_otherPortalTransform.forward;
+		objectRigidBody.transform.rotation = newRotation;
+
+		objectRigidBody.isKinematic = false;
+		objectRigidBody.velocity = impulse;
 	}
 
 	#endregion
