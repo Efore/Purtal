@@ -38,7 +38,7 @@ public class PortalBehaviour : MonoBehaviourExt {
 			if (other.tag == "Player")
 				TeleportPlayer ();
 			else
-				TeleportObject (other.transform.GetComponent<VelocityTracker> ());	
+				TeleportObject (other.transform.GetComponent<PickableObject> ());	
 		} 
 	}
 
@@ -70,28 +70,37 @@ public class PortalBehaviour : MonoBehaviourExt {
 		PlayerPOV.Singleton.CharacterController.SimpleMove (impulse);
 	}
 
-	private void TeleportObject(VelocityTracker objectVelocityTracker)
+	private void TeleportObject(PickableObject pickableObject)
 	{			
-		
-		Vector3 impulse =  m_otherPortalTransform.TransformVector(m_inversePortalTransform.InverseTransformVector(objectVelocityTracker.LastVelocity));
-		Vector3 angularVelocity = m_otherPortalTransform.TransformVector(m_inversePortalTransform.InverseTransformVector(objectVelocityTracker.LastAngularVelocity));
+		if (pickableObject.IsPicked)
+			return;
 
-		objectVelocityTracker.Rigidbody.isKinematic = true;
+		pickableObject.gameObject.SetActive (false);
+
+
+		Vector3 impulse =  m_otherPortalTransform.TransformVector(m_inversePortalTransform.InverseTransformVector(pickableObject.VelocityTracker.LastVelocity));
+		Vector3 angularVelocity = m_otherPortalTransform.TransformVector(m_inversePortalTransform.InverseTransformVector(pickableObject.VelocityTracker.LastAngularVelocity));
+
+		pickableObject.Clone.VelocityTracker.Rigidbody.isKinematic = true;
 		Vector3 newPosition = m_otherPortalTransform.position;
 
-		float yLocal = m_transformCached.InverseTransformPoint (objectVelocityTracker.transform.position).y;
+		float yLocal = m_transformCached.InverseTransformPoint (pickableObject.transform.position).y;
 		yLocal = m_otherPortalTransform.TransformPoint(new Vector3(0.0f,yLocal, 0.0f)).y - m_otherPortalTransform.position.y;
 		newPosition += new Vector3 (0.0f, yLocal, 0.0f);
 
-		Quaternion newRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * objectVelocityTracker.Rigidbody.rotation;
+		Quaternion newRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * pickableObject.VelocityTracker.Rigidbody.rotation;
 		newRotation = m_otherPortalTransform.rotation * newRotation;
 
-		objectVelocityTracker.transform.position = newPosition + m_otherPortalTransform.forward;
-		objectVelocityTracker.transform.rotation = newRotation;
+		pickableObject.TransformCached.position = Vector3.one * -1000000;
 
-		objectVelocityTracker.Rigidbody.isKinematic = false;
-		objectVelocityTracker.Rigidbody.velocity = impulse;
-		objectVelocityTracker.Rigidbody.angularVelocity = angularVelocity;
+		pickableObject.Clone.transform.position = newPosition + m_otherPortalTransform.forward;
+		pickableObject.Clone.transform.rotation = newRotation;
+
+		pickableObject.Clone.gameObject.SetActive (true);
+
+		pickableObject.Clone.VelocityTracker.Rigidbody.isKinematic = false;
+		pickableObject.Clone.VelocityTracker.Rigidbody.velocity = impulse;
+		pickableObject.Clone.VelocityTracker.Rigidbody.angularVelocity = angularVelocity;
 	}
 
 	#endregion

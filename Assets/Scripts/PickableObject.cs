@@ -2,17 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class VelocityTracker : MonoBehaviourExt
+public class PickableObject : MonoBehaviourExt
 {
-	
 	#region Singleton
 
 	#endregion
 
 	#region Private members
-
 	[SerializeField]
-	private Rigidbody m_rigidBody = null;
+	private PickableObject m_clone = null;
+	[SerializeField]
+	private VelocityTracker m_velocityTracker = null;
 
 	#endregion
 
@@ -22,22 +22,15 @@ public class VelocityTracker : MonoBehaviourExt
 
 	#region Properties
 
-
-	public Rigidbody Rigidbody 
-	{
-		get {
-			return m_rigidBody;
-		}
+	public PickableObject Clone {
+		get { return m_clone; }
 	}
 
-	public Vector3 LastVelocity 
-	{
-		get;
-		set;
+	public VelocityTracker VelocityTracker {
+		get { return m_velocityTracker; }
 	}
 
-	public Vector3 LastAngularVelocity 
-	{
+	public bool IsPicked {
 		get;
 		set;
 	}
@@ -53,14 +46,8 @@ public class VelocityTracker : MonoBehaviourExt
 	protected override void Awake ()
 	{
 		base.Awake ();
-		if(m_rigidBody == null)
-			m_rigidBody = GetComponent<Rigidbody> ();
-	}
-
-	void Update()
-	{
-		LastVelocity = Rigidbody.velocity;
-		LastAngularVelocity = Rigidbody.angularVelocity;
+		if(m_velocityTracker == null)
+			m_velocityTracker = GetComponent<VelocityTracker> ();
 	}
 
 	#endregion

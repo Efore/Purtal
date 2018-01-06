@@ -15,7 +15,7 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 	private float m_lerpValue = 0.5f;
 
 	private Transform m_pickedObjectParent = null;
-	private Rigidbody m_rigidBodyPicked = null;
+	private PickableObject m_pickablePicked = null;
 	#endregion
 
 	#region Public members
@@ -36,19 +36,21 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 	{
 		if (Input.GetKeyDown (KeyCode.E)) 
 		{
-			if (m_rigidBodyPicked != null) 
+			if (m_pickablePicked != null) 
 			{
-				m_rigidBodyPicked.useGravity = true;
-				m_rigidBodyPicked.isKinematic = false;
-				m_rigidBodyPicked.transform.SetParent (m_pickedObjectParent);
+				m_pickablePicked.VelocityTracker.Rigidbody.useGravity = true;
+				m_pickablePicked.VelocityTracker.Rigidbody.isKinematic = false;
+				//m_pickablePicked.transform.SetParent (m_pickedObjectParent);
+
+				m_pickablePicked.IsPicked = false;
 
 				Vector3 impulse = PlayerPOV.Singleton.transform.InverseTransformVector (PlayerPOV.Singleton.CharacterController.velocity);
 				impulse = m_transformCached.TransformVector (impulse);
 
 				if(Vector3.Dot(PlayerPOV.Singleton.CharacterController.velocity,m_transformCached.forward) > 0.5f)
-					m_rigidBodyPicked.AddForce (impulse,ForceMode.Impulse);
+					m_pickablePicked.VelocityTracker.Rigidbody.AddForce (impulse,ForceMode.Impulse);
 				
-				m_rigidBodyPicked = null;
+				m_pickablePicked = null;
 			} 
 			else
 				TryGetObject ();
@@ -57,10 +59,10 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 
 	void FixedUpdate()
 	{		
-		if (m_rigidBodyPicked != null) 
+		if (m_pickablePicked != null) 
 		{
-			m_rigidBodyPicked.MoveRotation(Quaternion.Lerp (m_rigidBodyPicked.transform.rotation, m_pickedObjectTransform.rotation,m_lerpValue));
-			m_rigidBodyPicked.MovePosition(Vector3.Lerp (m_rigidBodyPicked.transform.position, m_pickedObjectTransform.position,m_lerpValue));
+			m_pickablePicked.VelocityTracker.Rigidbody.MoveRotation(Quaternion.Lerp (m_pickablePicked.transform.rotation, m_pickedObjectTransform.rotation,m_lerpValue));
+			m_pickablePicked.VelocityTracker.Rigidbody.MovePosition(Vector3.Lerp (m_pickablePicked.transform.position, m_pickedObjectTransform.position,m_lerpValue));
 		}
 	}
 
@@ -73,11 +75,12 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 		RaycastHit hit;
 		if (Physics.Raycast (m_transformCached.position, m_transformCached.forward, out hit, m_maxDistanceForPicking,1 << LayerMask.NameToLayer ("Object"))) 
 		{	
-			m_rigidBodyPicked = hit.collider.attachedRigidbody;
-			m_rigidBodyPicked.useGravity = false;
-			m_rigidBodyPicked.isKinematic = true;
-			m_pickedObjectParent = m_rigidBodyPicked.transform.parent;
-			m_rigidBodyPicked.transform.SetParent (m_pickedObjectTransform);
+			m_pickablePicked = hit.collider.GetComponent<PickableObject>();
+			m_pickablePicked.VelocityTracker.Rigidbody.useGravity = false;
+			m_pickablePicked.VelocityTracker.Rigidbody.isKinematic = true;
+			m_pickablePicked.IsPicked = true;
+			//m_pickedObjectParent = m_pickablePicked.transform.parent;
+			//m_pickablePicked.transform.SetParent (m_pickedObjectTransform);
 		}
 	}
 

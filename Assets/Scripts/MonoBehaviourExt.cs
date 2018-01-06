@@ -11,4 +11,10 @@ public class MonoBehaviourExt : MonoBehaviour {
 		m_transformCached = transform;
 	}
 		
+	public Transform TransformCached
+	{
+		get {
+			return m_transformCached;
+		}
+	}
 }
