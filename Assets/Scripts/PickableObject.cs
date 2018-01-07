@@ -30,7 +30,17 @@ public class PickableObject : MonoBehaviourExt
 		get { return m_velocityTracker; }
 	}
 
+	public bool CanBeTeleported {
+		get;
+		set;
+	}
+
 	public bool IsPicked {
+		get;
+		set;
+	}
+
+	public PortalBehaviour PortalBehaviourForLocalPositioning {
 		get;
 		set;
 	}
@@ -46,8 +56,24 @@ public class PickableObject : MonoBehaviourExt
 	protected override void Awake ()
 	{
 		base.Awake ();
+		CanBeTeleported = true;
 		if(m_velocityTracker == null)
 			m_velocityTracker = GetComponent<VelocityTracker> ();
+	}
+
+	void Update()
+	{
+		if (PortalBehaviourForLocalPositioning != null) 
+		{
+			Vector3 localPositionOfClone = PortalBehaviourForLocalPositioning.OtherPortalBehaviour.InverseTransform.InverseTransformPoint (Clone.TransformCached.position);
+			Vector3 localDirectionOfClone = PortalBehaviourForLocalPositioning.OtherPortalBehaviour.InverseTransform.InverseTransformDirection (Clone.TransformCached.forward);
+
+			Vector3 newPosition = PortalBehaviourForLocalPositioning.TransformCached.TransformPoint (localPositionOfClone);
+			Vector3 newDirection =  PortalBehaviourForLocalPositioning.TransformCached.TransformDirection (localDirectionOfClone);
+
+			TransformCached.position = newPosition;
+			TransformCached.forward = newDirection;
+		}
 	}
 
 	#endregion

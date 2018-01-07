@@ -1746,7 +1746,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.76, y: 2.8, z: 0.01}
+  m_Size: {x: 2, y: 2.8, z: 0.01}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &556364617
 Transform:
@@ -1775,7 +1775,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae0aad9ba3347841b176b6417e150b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_otherPortalTransform: {fileID: 1218960288}
+  m_otherPortalBehaviour: {fileID: 1218960287}
   m_levelForThisPortal: {fileID: 325318982}
   m_portalLimit: {fileID: 6741566}
   m_inversePortalTransform: {fileID: 1266809891}
@@ -3761,7 +3761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae0aad9ba3347841b176b6417e150b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_otherPortalTransform: {fileID: 556364617}
+  m_otherPortalBehaviour: {fileID: 556364618}
   m_levelForThisPortal: {fileID: 787472395}
   m_portalLimit: {fileID: 1144673985}
   m_inversePortalTransform: {fileID: 1787458207}
@@ -3792,7 +3792,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.76, y: 2.8, z: 0.01}
+  m_Size: {x: 2, y: 2.8, z: 0.01}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!95 &1218960290
 Animator:

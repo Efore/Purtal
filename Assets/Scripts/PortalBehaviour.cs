@@ -6,7 +6,7 @@ using UnityStandardAssets.Characters.FirstPerson;
 public class PortalBehaviour : MonoBehaviourExt {
 
 	[SerializeField]
-	private Transform m_otherPortalTransform = null;
+	private PortalBehaviour m_otherPortalBehaviour = null;
 	[SerializeField]
 	private Transform m_levelForThisPortal = null;
 	[SerializeField]
@@ -28,6 +28,20 @@ public class PortalBehaviour : MonoBehaviourExt {
 		}
 	}
 
+	public PortalBehaviour OtherPortalBehaviour
+	{
+		get {
+			return m_otherPortalBehaviour;
+		}
+	}
+
+	public Transform InverseTransform
+	{
+		get{
+			return m_inversePortalTransform;
+		}
+	}
+
 	#region Monobehaviour calls
 
 	void OnTriggerEnter(Collider other)
@@ -37,15 +51,23 @@ public class PortalBehaviour : MonoBehaviourExt {
 			PortalsManager.Singleton.ElementsToTeleport.Add (other.transform.GetComponent<Rigidbody> (), this);	
 			if (other.tag == "Player")
 				TeleportPlayer ();
-			else
-				TeleportObject (other.transform.GetComponent<PickableObject> ());	
+			else 
+			{
+				if (other.transform.GetComponent<PickableObject> ().IsPicked)
+					TeleportPickedObject(other.transform.GetComponent<PickableObject> (),true);
+				else
+					TeleportObject (other.transform.GetComponent<PickableObject> ());	
+			}
 		} 
 	}
 
 	void OnTriggerExit(Collider other)
 	{
 		if (PortalsManager.Singleton.ElementsToTeleport.ContainsKey(other.transform.GetComponent<Rigidbody>()))
-			PortalsManager.Singleton.ElementsToTeleport.Remove (other.transform.GetComponent<Rigidbody>());		
+			PortalsManager.Singleton.ElementsToTeleport.Remove (other.transform.GetComponent<Rigidbody>());	
+		
+		if(other.transform.GetComponent<PickableObject> ().IsPicked)
+			TeleportPickedObject(other.transform.GetComponent<PickableObject> (),false);
 	}
 
 	#endregion
@@ -54,17 +76,17 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	private void TeleportPlayer()
 	{		
-		Vector3 newPosition = m_otherPortalTransform.position;
+		Vector3 newPosition = m_otherPortalBehaviour.TransformCached.position;
 
 		float yLocal = m_transformCached.InverseTransformPoint (PlayerPOV.Singleton.transform.position).y;
-		yLocal = m_otherPortalTransform.TransformPoint(new Vector3(0.0f,yLocal, 0.0f)).y - m_otherPortalTransform.position.y;
+		yLocal = m_otherPortalBehaviour.TransformCached.TransformPoint(new Vector3(0.0f,yLocal, 0.0f)).y - m_otherPortalBehaviour.TransformCached.position.y;
 		newPosition += new Vector3 (0.0f, yLocal, 0.0f);
 
-		Vector3 impulse = m_otherPortalTransform.TransformVector(PlayerPOV.Singleton.transform.InverseTransformVector(PlayerPOV.Singleton.CharacterController.velocity));
+		Vector3 impulse = m_otherPortalBehaviour.TransformCached.TransformVector(PlayerPOV.Singleton.transform.InverseTransformVector(PlayerPOV.Singleton.CharacterController.velocity));
 		PlayerPOV.Singleton.transform.position = newPosition;
 
 		Quaternion newPlayerRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * PlayerPOV.Singleton.GetPlayerRotation();
-		newPlayerRotation = m_otherPortalTransform.rotation * newPlayerRotation;
+		newPlayerRotation = m_otherPortalBehaviour.TransformCached.rotation * newPlayerRotation;
 
 		PlayerPOV.Singleton.SetPlayerDirection (newPlayerRotation * Vector3.forward);
 		PlayerPOV.Singleton.CharacterController.SimpleMove (impulse);
@@ -72,28 +94,27 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	private void TeleportObject(PickableObject pickableObject)
 	{			
-		if (pickableObject.IsPicked)
+		if (!pickableObject.CanBeTeleported)
 			return;
-
+		
 		pickableObject.gameObject.SetActive (false);
 
-
-		Vector3 impulse =  m_otherPortalTransform.TransformVector(m_inversePortalTransform.InverseTransformVector(pickableObject.VelocityTracker.LastVelocity));
-		Vector3 angularVelocity = m_otherPortalTransform.TransformVector(m_inversePortalTransform.InverseTransformVector(pickableObject.VelocityTracker.LastAngularVelocity));
+		Vector3 impulse = m_otherPortalBehaviour.TransformCached.TransformVector (m_inversePortalTransform.InverseTransformVector (pickableObject.VelocityTracker.LastVelocity));
+		Vector3 angularVelocity = m_otherPortalBehaviour.TransformCached.TransformVector (m_inversePortalTransform.InverseTransformVector (pickableObject.VelocityTracker.LastAngularVelocity));
 
 		pickableObject.Clone.VelocityTracker.Rigidbody.isKinematic = true;
-		Vector3 newPosition = m_otherPortalTransform.position;
+		Vector3 newPosition = m_otherPortalBehaviour.TransformCached.position;
 
 		float yLocal = m_transformCached.InverseTransformPoint (pickableObject.transform.position).y;
-		yLocal = m_otherPortalTransform.TransformPoint(new Vector3(0.0f,yLocal, 0.0f)).y - m_otherPortalTransform.position.y;
+		yLocal = m_otherPortalBehaviour.TransformCached.TransformPoint (new Vector3 (0.0f, yLocal, 0.0f)).y - m_otherPortalBehaviour.TransformCached.position.y;
 		newPosition += new Vector3 (0.0f, yLocal, 0.0f);
 
 		Quaternion newRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * pickableObject.VelocityTracker.Rigidbody.rotation;
-		newRotation = m_otherPortalTransform.rotation * newRotation;
+		newRotation = m_otherPortalBehaviour.TransformCached.rotation * newRotation;
 
 		pickableObject.TransformCached.position = Vector3.one * -1000000;
 
-		pickableObject.Clone.transform.position = newPosition + m_otherPortalTransform.forward;
+		pickableObject.Clone.transform.position = newPosition + m_otherPortalBehaviour.TransformCached.forward;
 		pickableObject.Clone.transform.rotation = newRotation;
 
 		pickableObject.Clone.gameObject.SetActive (true);
@@ -101,6 +122,27 @@ public class PortalBehaviour : MonoBehaviourExt {
 		pickableObject.Clone.VelocityTracker.Rigidbody.isKinematic = false;
 		pickableObject.Clone.VelocityTracker.Rigidbody.velocity = impulse;
 		pickableObject.Clone.VelocityTracker.Rigidbody.angularVelocity = angularVelocity;
+
+	}
+
+	private void TeleportPickedObject(PickableObject pickableObject, bool enter)
+	{
+		if (!pickableObject.CanBeTeleported)
+			return;
+		
+		if (enter) 
+		{
+			pickableObject.Clone.gameObject.SetActive (true);
+			pickableObject.Clone.CanBeTeleported = false;
+			pickableObject.Clone.PortalBehaviourForLocalPositioning = m_otherPortalBehaviour.GetComponent<PortalBehaviour> ();
+		} 
+		else 
+		{
+			pickableObject.Clone.gameObject.SetActive (false);
+			pickableObject.Clone.TransformCached.position = Vector3.one * -1000000;
+			pickableObject.Clone.CanBeTeleported = true;
+			pickableObject.Clone.PortalBehaviourForLocalPositioning = null;
+		}
 	}
 
 	#endregion
@@ -116,8 +158,8 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	public void AdjustLevelForThisPortal()
 	{	
-		Quaternion inverseRotation = Quaternion.Inverse (m_otherPortalTransform.rotation) * PlayerPOV.Singleton.RealLevelTransform.rotation;
-		Vector3 inversePosition = m_otherPortalTransform.InverseTransformPoint (PlayerPOV.Singleton.RealLevelTransform.position);
+		Quaternion inverseRotation = Quaternion.Inverse (m_otherPortalBehaviour.TransformCached.rotation) * PlayerPOV.Singleton.RealLevelTransform.rotation;
+		Vector3 inversePosition = m_otherPortalBehaviour.TransformCached.InverseTransformPoint (PlayerPOV.Singleton.RealLevelTransform.position);
 
 		m_levelForThisPortal.position = m_inversePortalTransform.TransformPoint (inversePosition);
 		m_levelForThisPortal.rotation = m_inversePortalTransform.rotation * inverseRotation;
