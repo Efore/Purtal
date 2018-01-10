@@ -16,6 +16,12 @@ public class PortalBehaviour : MonoBehaviourExt {
 	[SerializeField]
 	private Animator m_animator = null;
 
+	public bool PortalPlaced
+	{
+		get;
+		private set;
+	}
+
 	public BoxCollider BoxCollider
 	{
 		get { return m_portalLimit; }
@@ -56,7 +62,7 @@ public class PortalBehaviour : MonoBehaviourExt {
 				if (other.transform.GetComponent<PickableObject> ().IsPicked)
 					TeleportPickedObject(other.transform.GetComponent<PickableObject> (),true);
 				else
-					TeleportObject (other.transform.GetComponent<PickableObject> ());	
+					TeleportThrowedObject (other.transform.GetComponent<PickableObject> ());	
 			}
 		} 
 	}
@@ -65,9 +71,10 @@ public class PortalBehaviour : MonoBehaviourExt {
 	{
 		if (PortalsManager.Singleton.ElementsToTeleport.ContainsKey(other.transform.GetComponent<Rigidbody>()))
 			PortalsManager.Singleton.ElementsToTeleport.Remove (other.transform.GetComponent<Rigidbody>());	
-		
-		if(other.transform.GetComponent<PickableObject> ().IsPicked)
-			TeleportPickedObject(other.transform.GetComponent<PickableObject> (),false);
+
+		PickableObject otherPickableObject = other.transform.GetComponent<PickableObject> ();
+		if (otherPickableObject != null && otherPickableObject.IsPicked)
+			TeleportPickedObject (otherPickableObject, false);		
 	}
 
 	#endregion
@@ -92,7 +99,7 @@ public class PortalBehaviour : MonoBehaviourExt {
 		PlayerPOV.Singleton.CharacterController.SimpleMove (impulse);
 	}
 
-	private void TeleportObject(PickableObject pickableObject)
+	private void TeleportThrowedObject(PickableObject pickableObject)
 	{			
 		if (!pickableObject.CanBeTeleported)
 			return;
@@ -129,16 +136,20 @@ public class PortalBehaviour : MonoBehaviourExt {
 	{
 		if (!pickableObject.CanBeTeleported)
 			return;
-		
+
+		pickableObject.InPortalTrigger = enter;
+
 		if (enter) 
 		{
 			pickableObject.Clone.gameObject.SetActive (true);
+			pickableObject.Clone.VelocityTracker.Rigidbody.isKinematic = true;
 			pickableObject.Clone.CanBeTeleported = false;
 			pickableObject.Clone.PortalBehaviourForLocalPositioning = m_otherPortalBehaviour.GetComponent<PortalBehaviour> ();
 		} 
 		else 
 		{
 			pickableObject.Clone.gameObject.SetActive (false);
+			pickableObject.Clone.VelocityTracker.Rigidbody.isKinematic = false;
 			pickableObject.Clone.TransformCached.position = Vector3.one * -1000000;
 			pickableObject.Clone.CanBeTeleported = true;
 			pickableObject.Clone.PortalBehaviourForLocalPositioning = null;
@@ -151,6 +162,9 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	public void ChangePosition(Vector3 position, Vector3 direction)
 	{
+		if (!PortalPlaced)
+			PortalPlaced = true;
+		
 		m_transformCached.position = position;
 		m_transformCached.forward = direction;
 		m_animator.Rebind ();

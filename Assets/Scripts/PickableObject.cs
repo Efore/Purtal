@@ -40,6 +40,12 @@ public class PickableObject : MonoBehaviourExt
 		set;
 	}
 
+	public bool InPortalTrigger
+	{
+		get;
+		set;
+	}
+
 	public PortalBehaviour PortalBehaviourForLocalPositioning {
 		get;
 		set;
@@ -83,6 +89,23 @@ public class PickableObject : MonoBehaviourExt
 	#endregion
 
 	#region Public methods
+
+	public void ThrowObject()
+	{
+
+	}
+
+	public void DroppedObjectInPortal()
+	{
+		InPortalTrigger = false;
+		Clone.PortalBehaviourForLocalPositioning = null;
+
+		TransformCached.position = Vector3.one * -1000000;
+
+		Clone.gameObject.SetActive (true);
+		Clone.VelocityTracker.Rigidbody.isKinematic = false;
+		Clone.CanBeTeleported = true;
+	}
 
 	#endregion
 

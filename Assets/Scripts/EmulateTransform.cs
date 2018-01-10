@@ -16,7 +16,7 @@ public class EmulateTransform : MonoBehaviourExt {
 	private bool m_emulateScale = false;
 
 
-	void Update()
+	void LateUpdate()
 	{
 		if (m_transformToEmulate != null) 
 		{

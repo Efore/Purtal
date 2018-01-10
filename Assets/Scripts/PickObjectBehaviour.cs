@@ -37,7 +37,7 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 		if (Input.GetKeyDown (KeyCode.E)) 
 		{
 			if (m_pickablePicked != null) 
-			{
+			{					
 				m_pickablePicked.VelocityTracker.Rigidbody.useGravity = true;
 				m_pickablePicked.VelocityTracker.Rigidbody.isKinematic = false;
 				//m_pickablePicked.transform.SetParent (m_pickedObjectParent);
@@ -49,7 +49,10 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 
 				if(Vector3.Dot(PlayerPOV.Singleton.CharacterController.velocity,m_transformCached.forward) > 0.5f)
 					m_pickablePicked.VelocityTracker.Rigidbody.AddForce (impulse,ForceMode.Impulse);
-				
+
+				if (m_pickablePicked.InPortalTrigger)
+					m_pickablePicked.DroppedObjectInPortal ();
+
 				m_pickablePicked = null;
 			} 
 			else
