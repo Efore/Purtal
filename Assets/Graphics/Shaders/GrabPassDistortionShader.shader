@@ -1,12 +1,11 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Custom/DistortionShader"
+Shader "Custom/Grab Pass Distortion"
 {
 	Properties
 	{
 		_DistortionTex ("Distortion Texture", 2D) = "white" {}
 		_DistortionValue ("Distortion Value", Range (0.01, 2)) = 0.01
-		_Adjustment ("Adjustment", Range(1,100)) = 1
 
 		_StencilReferenceID("Stencil ID Reference", Float) = 1
 		[Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp("Stencil Comparison", Float) = 3
@@ -69,12 +68,7 @@ Shader "Custom/DistortionShader"
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				// sample the texture
-//				float2 direction = i.uv - float2(0,0) ;
-//				direction = normalize(direction);
 				fixed4 texCol = tex2D(_DistortionTex , i.uv );
-//				float2 newPos = i.uv + (direction * _DistortionValue * texCol.r);
-//				i.grabPos.xy = newPos * _Adjustment;
 				float2 direction = float2(0.5,0.5) - i.uv; 
 				direction = normalize(direction);
 				i.grabPos.x = i.grabPos.x + direction.x * _DistortionValue * (1- texCol.r);
