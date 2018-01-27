@@ -97,6 +97,9 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 		PlayerPOV.Singleton.SetPlayerDirection (newPlayerRotation * Vector3.forward);
 		PlayerPOV.Singleton.CharacterController.SimpleMove (impulse);
+
+		if (PlayerPOV.Singleton.PickObjectBehaviour.HasObjectPicked)
+			PlayerPOV.Singleton.PickObjectBehaviour.SwitchObject ();
 	}
 
 	private void TeleportThrowedObject(PickableObject pickableObject)

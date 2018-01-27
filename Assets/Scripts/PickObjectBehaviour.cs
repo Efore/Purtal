@@ -24,6 +24,11 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 
 	#region Properties
 
+	public bool HasObjectPicked
+	{
+		get { return m_pickablePicked != null; }
+	}
+
 	#endregion
 
 	#region Events
@@ -64,8 +69,8 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 	{		
 		if (m_pickablePicked != null) 
 		{
-			m_pickablePicked.VelocityTracker.Rigidbody.MoveRotation(Quaternion.Lerp (m_pickablePicked.transform.rotation, m_pickedObjectTransform.rotation,m_lerpValue));
-			m_pickablePicked.VelocityTracker.Rigidbody.MovePosition(Vector3.Lerp (m_pickablePicked.transform.position, m_pickedObjectTransform.position,m_lerpValue));
+			m_pickablePicked.transform.rotation = Quaternion.Lerp (m_pickablePicked.transform.rotation, m_pickedObjectTransform.rotation,m_lerpValue);
+			m_pickablePicked.transform.position = Vector3.Lerp (m_pickablePicked.transform.position, m_pickedObjectTransform.position,m_lerpValue);
 		}
 	}
 
@@ -90,6 +95,26 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 	#endregion
 
 	#region Public methods
+
+	public void SwitchObject()
+	{
+		PickableObject clone = m_pickablePicked.Clone;
+		clone.VelocityTracker.Rigidbody.useGravity = false;
+		clone.VelocityTracker.Rigidbody.isKinematic = true;
+		clone.IsPicked = true;
+
+		m_pickablePicked.gameObject.SetActive (false);
+		m_pickablePicked.VelocityTracker.Rigidbody.isKinematic = false;
+		m_pickablePicked.TransformCached.position = Vector3.one * -1000000;
+		m_pickablePicked.CanBeTeleported = true;
+
+		m_pickablePicked = clone;
+		m_pickablePicked.transform.rotation = m_pickedObjectTransform.rotation;
+		m_pickablePicked.transform.position = m_pickablePicked.transform.position;
+		m_pickablePicked.PortalBehaviourForLocalPositioning = null;
+		m_pickablePicked.gameObject.SetActive (true);
+
+	}
 
 	#endregion
 }

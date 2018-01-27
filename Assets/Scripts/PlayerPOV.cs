@@ -18,6 +18,8 @@ public class PlayerPOV : MonoBehaviour
 	#region Private members
 	[SerializeField]
 	private Transform m_realLevelTransform = null;
+	[SerializeField]
+	private PickObjectBehaviour m_pickObjectBehaviour = null;
 
 	private FirstPersonController m_fpsController = null;
 	private CharacterController m_characterController = null;
@@ -45,7 +47,10 @@ public class PlayerPOV : MonoBehaviour
 		get { return m_characterController; }
 	}
 
-
+	public PickObjectBehaviour PickObjectBehaviour
+	{
+		get { return m_pickObjectBehaviour;	}
+	}
 
 	#endregion
 

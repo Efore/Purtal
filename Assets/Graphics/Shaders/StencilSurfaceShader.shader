@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 
-Shader "Custom/Stencils/Bumped Specular" 
+Shader "Custom/Stencils/Surface" 
 {
 	Properties 
 	{
