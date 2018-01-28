@@ -15,6 +15,11 @@ public class PortalBehaviour : MonoBehaviourExt {
 	private Transform m_inversePortalTransform = null;
 	[SerializeField]
 	private Animator m_animator = null;
+	[SerializeField]
+	private ParticleSystem m_interiorParticleSystem = null;
+	[SerializeField]
+	private GameObject m_portalMeshContainer = null;
+
 
 	public bool PortalPlaced
 	{
@@ -45,6 +50,20 @@ public class PortalBehaviour : MonoBehaviourExt {
 	{
 		get{
 			return m_inversePortalTransform;
+		}
+	}
+
+	public ParticleSystem InteriorParticleSystem
+	{
+		get {
+			return m_interiorParticleSystem;
+		}
+	}
+		
+	public GameObject PortalMeshContainer
+	{
+		get { 
+			return m_portalMeshContainer;
 		}
 	}
 
@@ -166,8 +185,18 @@ public class PortalBehaviour : MonoBehaviourExt {
 	public void ChangePosition(Vector3 position, Vector3 direction)
 	{
 		if (!PortalPlaced)
+		{
 			PortalPlaced = true;
 		
+			if (m_otherPortalBehaviour.PortalPlaced)
+			{
+				m_otherPortalBehaviour.InteriorParticleSystem.gameObject.SetActive (false);
+				m_otherPortalBehaviour.PortalMeshContainer.SetActive (true);
+				InteriorParticleSystem.gameObject.SetActive (false);
+				PortalMeshContainer.SetActive (true);
+			}
+		}
+				
 		m_transformCached.position = position;
 		m_transformCached.forward = direction;
 		m_animator.Rebind ();
