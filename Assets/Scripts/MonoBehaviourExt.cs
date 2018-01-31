@@ -1,4 +1,13 @@
-﻿using System.Collections;
+﻿/**************************************************************************\
+Module Name:  MonoBehaviourExt.cs
+Project:      Purtal
+
+This class extends the basic MonoBehaviour and adds a reference to the Transform class
+of the object from the Awake call of the class.
+
+\***************************************************************************/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

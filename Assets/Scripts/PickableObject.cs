@@ -1,4 +1,13 @@
-﻿using UnityEngine;
+﻿/**************************************************************************\
+Module Name:  PicklableObject.cs
+Project:      Purtal
+
+This class defines the concept of a PickableObject (like companion cubes) and 
+manages its behaviour.
+
+\***************************************************************************/
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -69,6 +78,9 @@ public class PickableObject : MonoBehaviourExt
 
 	void Update()
 	{
+		//For simulating the movement of a picked Pickable Object through portals, we use two instances of that Pickable Object, but only one of them is shown at the same time.
+		//The one that is invisible (and unpicked), will be visible and will be moved when the picked one pass through the portal without being thrown.
+		//If a portal is assigned, we use the position and direction of the picked Pickable Object in the local space of the portal that is passing through, and pour it on this one.
 		if (PortalBehaviourForLocalPositioning != null) 
 		{
 			Vector3 localPositionOfClone = PortalBehaviourForLocalPositioning.OtherPortalBehaviour.InverseTransform.InverseTransformPoint (Clone.TransformCached.position);
@@ -90,11 +102,9 @@ public class PickableObject : MonoBehaviourExt
 
 	#region Public methods
 
-	public void ThrowObject()
-	{
-
-	}
-
+	/// <summary>
+	/// Settings for when the picked Pickable Object passing through the portal is dropped
+	/// </summary>
 	public void DroppedObjectInPortal()
 	{
 		InPortalTrigger = false;

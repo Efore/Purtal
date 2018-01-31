@@ -16,12 +16,6 @@ public class PortalsManager : MonoBehaviour
 	#endregion
 
 	#region Private members
-
-	[SerializeField]
-	private PortalBehaviour m_portalA = null;
-	[SerializeField]
-	private PortalBehaviour m_portalB = null;
-
 	#endregion
 
 	#region Public members

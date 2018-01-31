@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿/**************************************************************************\
+Module Name:  PicklObjectBehaviour.cs
+Project:      Purtal
+
+This class defines how a Pickable Object is picked and how is moved afterwards.
+
+\***************************************************************************/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +22,6 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 	[Range(0.0f,1.0f)]
 	private float m_lerpValue = 0.5f;
 
-	private Transform m_pickedObjectParent = null;
 	private PickableObject m_pickablePicked = null;
 	#endregion
 
@@ -39,6 +46,8 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 
 	void Update()
 	{
+		//If we press E and there is no object picked, we try to get one in front of the camera
+		//Otherwise, it throws the current picked object using the current movement of the player as impulse, as long as the player is moving in the same direction (or similar) that the camera
 		if (Input.GetKeyDown (KeyCode.E)) 
 		{
 			if (m_pickablePicked != null) 
@@ -95,7 +104,11 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 	#endregion
 
 	#region Public methods
-
+	/// <summary>
+	/// Used when the player pass through any portal with an Pickable Object picked.
+	/// Using the visible/invisible Pickable Object esque, we switch between the invisible and the visible one,
+	/// making the visible invisible and the other way around.
+	/// </summary>
 	public void SwitchObject()
 	{
 		PickableObject clone = m_pickablePicked.Clone;

@@ -1,4 +1,13 @@
-﻿using System.Collections;
+﻿/**************************************************************************\
+Module Name:  EmulateTransform.cs
+Project:      Purtal
+
+This class takes an external transform and update its own one at each LateUpdate
+with the local/global position/rotation/scale of the former.
+
+\***************************************************************************/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

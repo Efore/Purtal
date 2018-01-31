@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+﻿
+/**************************************************************************\
+Module Name:  PlayerPOV.cs
+Project:      Purtal
+
+Simple singleton that allow easy access to the player's state.
+\***************************************************************************/
+
+using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.Characters.FirstPerson;
 
