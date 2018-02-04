@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/**************************************************************************\
+Module Name:  VelocityTracker.cs
+Project:      Purtal
+
+This class keeps track of the last frame's Linear Velocity and Angular Velocity of a Rigid Body
+
+\***************************************************************************/
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 

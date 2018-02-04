@@ -1,4 +1,13 @@
-﻿using UnityEngine;
+﻿/**************************************************************************\
+Module Name:  PortalGunBehaviour.cs
+Project:      Purtal
+
+This class manages the behaviour of the portal gun which consists on opening portals
+after calculating its correct position.
+
+\***************************************************************************/
+
+using UnityEngine;
 using System.Collections;
 
 public class PortalGunBehaviour : MonoBehaviourExt
@@ -58,6 +67,7 @@ public class PortalGunBehaviour : MonoBehaviourExt
 
 	void Update()
 	{
+		//Each mouse's button will shoot a different portal
 		if (Input.GetMouseButtonDown (0))
 			ShootPortal (m_portalA, m_portalB);
 		else if (Input.GetMouseButtonDown (1))
@@ -111,6 +121,8 @@ public class PortalGunBehaviour : MonoBehaviourExt
 	private void PlacePortal(PortalBehaviour portalToPlace, PortalBehaviour otherPortal, Vector3 position, Vector3 direction)
 	{
 		Vector3 futurePos = position;
+		//If the portal fits in the destined position or anywhere close, 
+		//the portal opens in that position and the virtual level of the othe portal is adjusted according to that
 		if (PortalFits (portalToPlace, ref futurePos, direction))
 		{
 			portalToPlace.ChangePosition (futurePos , direction);
@@ -121,6 +133,7 @@ public class PortalGunBehaviour : MonoBehaviourExt
 
 	private bool PortalFits(PortalBehaviour portal, ref Vector3 position, Vector3 direction)
 	{	
+		//We create 8 rays, one in each basic direction.
 		if (direction == Vector3.up)
 		{
 			raycastLeftDirection = Vector3.Cross (Vector3.forward, direction).normalized;		 
@@ -147,22 +160,26 @@ public class PortalGunBehaviour : MonoBehaviourExt
 
 		raycastOrigin = position + direction * 0.1f;
 
+		//The rays will check if they collide with another portal, or with a wall.
 		int checkLayer = 1 << LayerMask.NameToLayer ("PortalLimit") | 1 << LayerMask.NameToLayer ("AllowPortal") | 1 << LayerMask.NameToLayer ("Wall");
 
+		//According to this collisions, the portal may get moved to a new position.
 		NewPortalPositionAfterRaycasts (portal, ref position,checkLayer);
 
-
+		//We check if the new position collides again with other portal and/or wall.
 		Collider[] collidersAfterReposition = Physics.OverlapBox (position + direction * 0.1f, new Vector3 (horizontalPortalLimitSize - 0.01f, verticalPortalLimitSize - 0.01f, 0.01f), Quaternion.LookRotation (direction), checkLayer);
 
 		//Checking that the portal's fitting checker is not colliding with itself
 		if(collidersAfterReposition.Length > 1 || (collidersAfterReposition.Length == 1 && collidersAfterReposition[0].transform.parent != portal.transform))				
 			return false;
 
+		//If the new position does not collides with anything, the portal fits in that position
 		return true;
 	}
 
 	private void NewPortalPositionAfterRaycasts(PortalBehaviour portal, ref Vector3 position, int checkLayer)
 	{		
+		//Again, several rays are cast to move the portal to a new  possibly fitting position
 		foundUp = false;
 		foundDown = false;
 		foundLeft = false;

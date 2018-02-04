@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+﻿/**************************************************************************\
+Module Name:  PortalsManager.cs
+Project:      Purtal
+
+Simple singleton to keep the score of entities passing through the portals
+
+\***************************************************************************/
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 

@@ -96,14 +96,13 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 			m_pickablePicked.VelocityTracker.Rigidbody.useGravity = false;
 			m_pickablePicked.VelocityTracker.Rigidbody.isKinematic = true;
 			m_pickablePicked.IsPicked = true;
-			//m_pickedObjectParent = m_pickablePicked.transform.parent;
-			//m_pickablePicked.transform.SetParent (m_pickedObjectTransform);
 		}
 	}
 
 	#endregion
 
 	#region Public methods
+
 	/// <summary>
 	/// Used when the player pass through any portal with an Pickable Object picked.
 	/// Using the visible/invisible Pickable Object esque, we switch between the invisible and the visible one,
@@ -118,15 +117,14 @@ public class PickObjectBehaviour : MonoBehaviourExt {
 
 		m_pickablePicked.gameObject.SetActive (false);
 		m_pickablePicked.VelocityTracker.Rigidbody.isKinematic = false;
+		clone.transform.position = m_pickablePicked.transform.position;
 		m_pickablePicked.TransformCached.position = Vector3.one * -1000000;
 		m_pickablePicked.CanBeTeleported = true;
 
 		m_pickablePicked = clone;
 		m_pickablePicked.transform.rotation = m_pickedObjectTransform.rotation;
-		m_pickablePicked.transform.position = m_pickablePicked.transform.position;
 		m_pickablePicked.PortalBehaviourForLocalPositioning = null;
 		m_pickablePicked.gameObject.SetActive (true);
-
 	}
 
 	#endregion

@@ -1,4 +1,13 @@
-﻿using System.Collections;
+﻿/**************************************************************************\
+Module Name:  PortalBehaviour.cs
+Project:      Purtal
+
+This class manages the full behaviour of the portal: from the teleportation of entities to the
+transforming of the virtual level. 
+(Virtual levels are copies of the current level used for simulate Portal's effect).
+\***************************************************************************/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
@@ -71,6 +80,8 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	void OnTriggerEnter(Collider other)
 	{
+		//When the player or a pickable object enter the collider of this portal, we manage its teleportation.
+		//They are treated differently.
 		if (!PortalsManager.Singleton.ElementsToTeleport.ContainsKey (other.transform.GetComponent<Rigidbody> ())) 
 		{
 			PortalsManager.Singleton.ElementsToTeleport.Add (other.transform.GetComponent<Rigidbody> (), this);	
@@ -102,21 +113,26 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	private void TeleportPlayer()
 	{		
+		//Once the player enters the portal's trigger, we calculate its future position.
 		Vector3 newPosition = m_otherPortalBehaviour.TransformCached.position;
-
 		float yLocal = m_transformCached.InverseTransformPoint (PlayerPOV.Singleton.transform.position).y;
 		yLocal = m_otherPortalBehaviour.TransformCached.TransformPoint(new Vector3(0.0f,yLocal, 0.0f)).y - m_otherPortalBehaviour.TransformCached.position.y;
 		newPosition += new Vector3 (0.0f, yLocal, 0.0f);
 
+		//We calculate the impulse as the local velocity of the player just as they enter the trigger.
 		Vector3 impulse = m_otherPortalBehaviour.TransformCached.TransformVector(PlayerPOV.Singleton.transform.InverseTransformVector(PlayerPOV.Singleton.CharacterController.velocity));
-		PlayerPOV.Singleton.transform.position = newPosition;
 
+		//Whatever rotation the player had just before entering the trigger, it is calculated in the local space of the 
+		//inverse forward of this portal. This rotation is added to the player after changing its position.
 		Quaternion newPlayerRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * PlayerPOV.Singleton.GetPlayerRotation();
 		newPlayerRotation = m_otherPortalBehaviour.TransformCached.rotation * newPlayerRotation;
 
+		//Applying calculations
+		PlayerPOV.Singleton.transform.position = newPosition;
 		PlayerPOV.Singleton.SetPlayerDirection (newPlayerRotation * Vector3.forward);
 		PlayerPOV.Singleton.CharacterController.SimpleMove (impulse);
 
+		//If the player was grabbing any object, we switch it for its deactivated clone
 		if (PlayerPOV.Singleton.PickObjectBehaviour.HasObjectPicked)
 			PlayerPOV.Singleton.PickObjectBehaviour.SwitchObject ();
 	}
@@ -125,29 +141,35 @@ public class PortalBehaviour : MonoBehaviourExt {
 	{			
 		if (!pickableObject.CanBeTeleported)
 			return;
-		
-		pickableObject.gameObject.SetActive (false);
 
+		//For an increased realism in the perception of the teleportation of a throwed object, we will use its clone.
+
+		//We calculate the current velocity and angular velocity of the entering object in the local space of the inverse 
+		//forward of this portal.
 		Vector3 impulse = m_otherPortalBehaviour.TransformCached.TransformVector (m_inversePortalTransform.InverseTransformVector (pickableObject.VelocityTracker.LastVelocity));
 		Vector3 angularVelocity = m_otherPortalBehaviour.TransformCached.TransformVector (m_inversePortalTransform.InverseTransformVector (pickableObject.VelocityTracker.LastAngularVelocity));
 
-		pickableObject.Clone.VelocityTracker.Rigidbody.isKinematic = true;
+		//The future position for the entering object's clone is calculated
 		Vector3 newPosition = m_otherPortalBehaviour.TransformCached.position;
-
 		float yLocal = m_transformCached.InverseTransformPoint (pickableObject.transform.position).y;
 		yLocal = m_otherPortalBehaviour.TransformCached.TransformPoint (new Vector3 (0.0f, yLocal, 0.0f)).y - m_otherPortalBehaviour.TransformCached.position.y;
 		newPosition += new Vector3 (0.0f, yLocal, 0.0f);
 
+		//Also, the future rotation
 		Quaternion newRotation = Quaternion.Inverse (m_inversePortalTransform.rotation) * pickableObject.VelocityTracker.Rigidbody.rotation;
 		newRotation = m_otherPortalBehaviour.TransformCached.rotation * newRotation;
 
-		pickableObject.TransformCached.position = Vector3.one * -1000000;
-
+		//We move the clone to the calculated position and we modify its rotation
+		pickableObject.Clone.VelocityTracker.Rigidbody.isKinematic = true;
 		pickableObject.Clone.transform.position = newPosition + m_otherPortalBehaviour.TransformCached.forward;
 		pickableObject.Clone.transform.rotation = newRotation;
 
-		pickableObject.Clone.gameObject.SetActive (true);
+		//The entering object is deactivated and moved away
+		pickableObject.gameObject.SetActive (false);
+		pickableObject.TransformCached.position = Vector3.one * -1000000;
 
+		//The clone is activated and the physic calculations are applied
+		pickableObject.Clone.gameObject.SetActive (true);
 		pickableObject.Clone.VelocityTracker.Rigidbody.isKinematic = false;
 		pickableObject.Clone.VelocityTracker.Rigidbody.velocity = impulse;
 		pickableObject.Clone.VelocityTracker.Rigidbody.angularVelocity = angularVelocity;
@@ -161,6 +183,8 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 		pickableObject.InPortalTrigger = enter;
 
+		//Several parameters of the clone are modified. The PickableObject class will handle this behaviour by itself
+		//according to this settings.
 		if (enter) 
 		{
 			pickableObject.Clone.gameObject.SetActive (true);
@@ -182,12 +206,18 @@ public class PortalBehaviour : MonoBehaviourExt {
 
 	#region Public methods
 
+	/// <summary>
+	/// Changes the position and direction of the portal.
+	/// </summary>
+	/// <param name="position">New position.</param>
+	/// <param name="direction">New direction.</param>
 	public void ChangePosition(Vector3 position, Vector3 direction)
-	{
+	{		
 		if (!PortalPlaced)
 		{
 			PortalPlaced = true;
-		
+
+			//If the other portal has been already placed, this portal shows its virtual level
 			if (m_otherPortalBehaviour.PortalPlaced)
 			{
 				m_otherPortalBehaviour.InteriorParticleSystem.gameObject.SetActive (false);
@@ -202,6 +232,9 @@ public class PortalBehaviour : MonoBehaviourExt {
 		m_animator.Rebind ();
 	}
 
+	/// <summary>
+	/// Adjusts the position and rotation of the virtual level for this portal.
+	/// </summary>
 	public void AdjustLevelForThisPortal()
 	{	
 		Quaternion inverseRotation = Quaternion.Inverse (m_otherPortalBehaviour.TransformCached.rotation) * PlayerPOV.Singleton.RealLevelTransform.rotation;

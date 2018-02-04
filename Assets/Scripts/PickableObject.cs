@@ -103,7 +103,7 @@ public class PickableObject : MonoBehaviourExt
 	#region Public methods
 
 	/// <summary>
-	/// Settings for when the picked Pickable Object passing through the portal is dropped
+	/// Settings to apply when the picked Pickable Object passing through the portal is dropped
 	/// </summary>
 	public void DroppedObjectInPortal()
 	{
